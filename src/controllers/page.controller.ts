@@ -67,10 +67,6 @@ export const deletePage = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-/**
- * AUTO IMPORT / SYNC WEBSITE ROUTES
- * Scans provided array of frontend routes and inserts missing routes into MongoDB.
- */
 export const syncWebsiteRoutes = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const frontendRoutes: Array<{ title: string; route: string; module: string; icon?: string }> = req.body.routes || [
@@ -80,6 +76,7 @@ export const syncWebsiteRoutes = async (req: AuthenticatedRequest, res: Response
       { title: 'Contract Scope', route: '/deliverables', module: 'deliverables', icon: '📦' },
       { title: 'Approvals Queue', route: '/approvals', module: 'approvals', icon: '✅' },
       { title: 'Team Capacity', route: '/team', module: 'team', icon: '👥' },
+      { title: 'User Accounts', route: '/users', module: 'team', icon: '👤' },
       { title: 'KPI Tracker', route: '/kpi', module: 'kpi', icon: '🎯' },
       { title: 'Ad Spend & Budget', route: '/budget', module: 'budget', icon: '💰' },
       { title: 'Notifications Center', route: '/notifications', module: 'notifications', icon: '🔔' },
