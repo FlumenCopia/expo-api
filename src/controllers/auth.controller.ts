@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { UserModel } from '../models/User.model';
 import { RoleModel } from '../models/Role.model';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
@@ -138,7 +139,14 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
 export const switchUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body;
-    const user = await UserModel.findById(userId);
+    let user = null;
+
+    if (mongoose.Types.ObjectId.isValid(userId)) {
+      user = await UserModel.findById(userId);
+    }
+    if (!user && userId) {
+      user = await UserModel.findOne({ email: userId });
+    }
 
     if (!user || user.isDeleted) {
       return res.status(404).json({ success: false, message: 'User not found' });

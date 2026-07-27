@@ -22,13 +22,17 @@ export const authenticateJWT = async (
   try {
     let token: string | undefined = undefined;
 
-    // Check cookie first
-    if (req.cookies && req.cookies.masters_expo_token) {
+    // Check Authorization header first
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      const rawToken = req.headers.authorization.split(' ')[1];
+      if (rawToken && rawToken !== 'cookie_session' && rawToken !== 'null' && rawToken !== 'undefined') {
+        token = rawToken;
+      }
+    }
+
+    // Fallback to HTTP-only Cookie
+    if (!token && req.cookies && req.cookies.masters_expo_token) {
       token = req.cookies.masters_expo_token;
-    } 
-    // Fallback to Bearer token in header
-    else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1];
     }
 
     if (!token) {
@@ -41,13 +45,18 @@ export const authenticateJWT = async (
     const user = await UserModel.findById(decoded.id);
 
     if (!user || !user.isActive || user.isDeleted) {
-      // Clear invalid cookie
       res.clearCookie('masters_expo_token', { path: '/' });
       return res.status(401).json({ success: false, message: 'User account not active or found.' });
     }
 
-    // Resolve permissions from user role
-    const roleDoc = await RoleModel.findOne({ code: user.role });
+    // Resolve permissions from user role (check roleRef first, fallback to code)
+    let roleDoc = null;
+    if (user.roleRef) {
+      roleDoc = await RoleModel.findById(user.roleRef);
+    }
+    if (!roleDoc && user.role) {
+      roleDoc = await RoleModel.findOne({ code: user.role });
+    }
     const permissions = roleDoc ? roleDoc.permissions : [];
 
     req.user = {
