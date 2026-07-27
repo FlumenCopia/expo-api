@@ -6,6 +6,34 @@ import { MenuModel } from '../models/Menu.model';
 import { PageModel } from '../models/Page.model';
 import { UserRole } from '../types';
 
+const SYSTEM_PERMISSIONS = [
+  { name: 'Full System Wildcard', code: '*', module: 'Admin', action: 'all', description: 'Unrestricted system access' },
+  { name: 'View All Tasks & Reports', code: 'view_all', module: 'Tasks', action: 'read', description: 'View all tasks and system views' },
+  { name: 'Create Tasks', code: 'create_task', module: 'Tasks', action: 'create', description: 'Create new tasks' },
+  { name: 'Edit Tasks', code: 'edit_task', module: 'Tasks', action: 'update', description: 'Edit existing tasks' },
+  { name: 'Assign Tasks', code: 'assign', module: 'Tasks', action: 'assign', description: 'Assign tasks to team members' },
+  { name: 'Approve Tasks', code: 'approve', module: 'Tasks', action: 'approve', description: 'Approve and publish tasks' },
+  { name: 'Submit for Review', code: 'submit_review', module: 'Tasks', action: 'review', description: 'Submit tasks for lead review' },
+  { name: 'Flag Issue', code: 'flag', module: 'Tasks', action: 'flag', description: 'Flag issues and blockers' },
+  { name: 'View Budget & Spend', code: 'view_budget', module: 'Budget', action: 'read', description: 'Access ad spend and financial data' },
+  { name: 'View KPI Analytics', code: 'view_kpi', module: 'KPI', action: 'read', description: 'Access KPI trackers and metrics' },
+  { name: 'Manage Team & Roles', code: 'manage_team', module: 'Team', action: 'manage', description: 'Add, edit, and delete team members and roles' },
+  { name: 'Manage Dynamic Pages', code: 'pages.manage', module: 'Admin', action: 'manage', description: 'Manage dynamic pages and website route sync' },
+
+  // Page View & Access Control Permissions
+  { name: 'View Command Center Page', code: 'page.dashboard.view', module: 'Pages', action: 'view', description: 'Access Command Center Dashboard' },
+  { name: 'View Task Board Page', code: 'page.tasks.view', module: 'Pages', action: 'view', description: 'Access Kanban Task Board' },
+  { name: 'View Timeline & Phases Page', code: 'page.timeline.view', module: 'Pages', action: 'view', description: 'Access Timeline & Phase Milestones' },
+  { name: 'View Contract Scope Page', code: 'page.deliverables.view', module: 'Pages', action: 'view', description: 'Access Deliverables Contract Scope' },
+  { name: 'View Approvals Queue Page', code: 'page.approvals.view', module: 'Pages', action: 'view', description: 'Access Approvals Queue' },
+  { name: 'View Team Capacity Page', code: 'page.team.view', module: 'Pages', action: 'view', description: 'Access Team Capacity & Workload' },
+  { name: 'View KPI Tracker Page', code: 'page.kpi.view', module: 'Pages', action: 'view', description: 'Access KPI Tracker' },
+  { name: 'View Ad Spend & Budget Page', code: 'page.budget.view', module: 'Pages', action: 'view', description: 'Access Ad Spend & Budget' },
+  { name: 'View Notifications Page', code: 'page.notifications.view', module: 'Pages', action: 'view', description: 'Access Activity Alerts & Notifications' },
+  { name: 'View Settings & Access Page', code: 'page.settings.view', module: 'Pages', action: 'view', description: 'Access System RBAC & Settings' },
+  { name: 'View Page Management Page', code: 'page.admin.view', module: 'Pages', action: 'view', description: 'Access Dynamic Route Sync & Management' }
+];
+
 const DEFAULT_MENUS = [
   { title: 'Command Center', route: '/dashboard', icon: '☀️', section: 'CAMPAIGN', displayOrder: 1, requiredPermission: 'view_all' },
   { title: 'Task Board', route: '/tasks', icon: '📋', section: 'EXECUTION', displayOrder: 2, requiredPermission: 'view_all' },
@@ -36,24 +64,23 @@ const DEFAULT_PAGES = [
 
 /**
  * Production Startup Initializer
- * Ensures Super Admin, default Menus, and Pages exist in MongoDB on server startup.
+ * Ensures System Permissions, Super Admin, default Menus, and Pages exist in MongoDB on server startup.
  */
 export async function ensureSuperAdmin() {
   try {
-    // 1. Ensure Wildcard Permission & Super Admin Role exist
+    // 1. Upsert all System & Page Permissions
+    for (const perm of SYSTEM_PERMISSIONS) {
+      await PermissionModel.updateOne(
+        { code: perm.code },
+        { $setOnInsert: perm },
+        { upsert: true }
+      );
+    }
+    console.log('[Startup Init] System permissions verified.');
+
+    // 2. Ensure Super Admin Role exists
     let superAdminRole = await RoleModel.findOne({ code: 'super_admin' });
     if (!superAdminRole) {
-      let wildcardPerm = await PermissionModel.findOne({ code: '*' });
-      if (!wildcardPerm) {
-        wildcardPerm = await PermissionModel.create({
-          name: 'Full System Wildcard',
-          code: '*',
-          module: 'Admin',
-          action: 'all',
-          description: 'Unrestricted system access',
-        });
-      }
-
       superAdminRole = await RoleModel.create({
         name: 'Super Admin',
         code: 'super_admin',
@@ -66,7 +93,7 @@ export async function ensureSuperAdmin() {
 
     const defaultPasswordHash = await bcrypt.hash('Admin@123456', 10);
 
-    // 2. Ensure Super Admin user exists
+    // 3. Ensure Super Admin users exist
     const existingSuperAdmin = await UserModel.findOne({
       $or: [
         { role: UserRole.SUPER_ADMIN },
@@ -106,23 +133,23 @@ export async function ensureSuperAdmin() {
         skills: ['strategy', 'client', 'approval', 'full_access'],
         isActive: true,
       });
-      console.log('[Startup Init] Super Admin users created (admin@flumenx.com & anoop@flumenx.com).');
+      console.log('[Startup Init] Super Admin users created.');
     }
 
-    // 3. Ensure Default Menus exist
+    // 4. Ensure Default Menus exist
     const menuCount = await MenuModel.countDocuments();
     if (menuCount === 0) {
       await MenuModel.insertMany(DEFAULT_MENUS);
       console.log('[Startup Init] Initialized default navigation menus.');
     }
 
-    // 4. Ensure Default Pages exist
+    // 5. Ensure Default Pages exist
     const pageCount = await PageModel.countDocuments();
     if (pageCount === 0) {
       await PageModel.insertMany(DEFAULT_PAGES);
       console.log('[Startup Init] Initialized default system pages.');
     }
   } catch (error) {
-    console.error('[Startup Init Error]: Failed to verify/seed Super Admin & Menus:', error);
+    console.error('[Startup Init Error]: Failed to verify/seed permissions, roles & menus:', error);
   }
 }
