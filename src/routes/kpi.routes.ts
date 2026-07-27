@@ -5,7 +5,7 @@ import { authenticateJWT, requirePermission } from '../middlewares/auth.middlewa
 const router = Router();
 
 router.use(authenticateJWT);
-router.get('/', getAllKPIs);
-router.put('/:id', requirePermission('view_kpi', 'admin', '*'), updateKPI);
+router.get('/', requirePermission('page.kpi.view', '*'), getAllKPIs);
+router.put('/:id', requirePermission('page.kpi.edit', 'view_kpi', 'admin', '*'), updateKPI);
 
 export default router;

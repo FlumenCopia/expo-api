@@ -5,7 +5,7 @@ import { authenticateJWT, requirePermission } from '../middlewares/auth.middlewa
 const router = Router();
 
 router.use(authenticateJWT);
-router.get('/', getAllBudgets);
-router.put('/:id', requirePermission('view_budget', 'admin', '*'), updateBudget);
+router.get('/', requirePermission('page.budget.view', '*'), getAllBudgets);
+router.put('/:id', requirePermission('page.budget.edit', 'view_budget', 'admin', '*'), updateBudget);
 
 export default router;

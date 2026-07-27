@@ -6,9 +6,9 @@ const router = Router();
 
 router.use(authenticateJWT);
 
-router.get('/', getAllRoles);
-router.post('/', requirePermission('manage_team', 'admin', '*'), createRole);
-router.put('/:id', requirePermission('manage_team', 'admin', '*'), updateRole);
-router.delete('/:id', requirePermission('manage_team', 'admin', '*'), deleteRole);
+router.get('/', requirePermission('page.settings.view', '*'), getAllRoles);
+router.post('/', requirePermission('page.settings.create', 'page.settings.edit', 'manage_team', 'admin', '*'), createRole);
+router.put('/:id', requirePermission('page.settings.edit', 'manage_team', 'admin', '*'), updateRole);
+router.delete('/:id', requirePermission('page.settings.delete', 'manage_team', 'admin', '*'), deleteRole);
 
 export default router;
