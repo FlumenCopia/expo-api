@@ -19,6 +19,17 @@ const setAuthCookie = (res: Response, token: string) => {
   });
 };
 
+const getRolePermissions = async (user: any) => {
+  let roleDoc = null;
+  if (user.roleRef) {
+    roleDoc = await RoleModel.findById(user.roleRef);
+  }
+  if (!roleDoc && user.role) {
+    roleDoc = await RoleModel.findOne({ code: user.role });
+  }
+  return roleDoc ? roleDoc.permissions : [];
+};
+
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -39,8 +50,7 @@ export const login = async (req: Request, res: Response) => {
       }
     }
 
-    const roleDoc = await RoleModel.findOne({ code: user.role });
-    const permissions = roleDoc ? roleDoc.permissions : [];
+    const permissions = await getRolePermissions(user);
 
     const accessToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     const refreshToken = jwt.sign({ id: user._id }, REFRESH_SECRET, { expiresIn: '14d' });
@@ -52,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
       userName: user.name,
       action: 'LOGIN',
       resource: 'Auth',
-      details: { email: user.email, role: user.role },
+      details: { email: user.email, role: user.role, roleRef: user.roleRef },
       ip: req.ip,
       userAgent: req.headers['user-agent'],
     });
@@ -69,6 +79,7 @@ export const login = async (req: Request, res: Response) => {
           email: user.email,
           short: user.short,
           role: user.role,
+          roleRef: user.roleRef,
           fn: user.fn,
           team: user.team,
           color: user.color,
@@ -100,8 +111,7 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({ success: false, message: 'User not found or inactive' });
     }
 
-    const roleDoc = await RoleModel.findOne({ code: user.role });
-    const permissions = roleDoc ? roleDoc.permissions : [];
+    const permissions = await getRolePermissions(user);
 
     return res.json({
       success: true,
@@ -111,6 +121,7 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
         email: user.email,
         short: user.short,
         role: user.role,
+        roleRef: user.roleRef,
         fn: user.fn,
         team: user.team,
         color: user.color,
@@ -133,8 +144,7 @@ export const switchUser = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    const roleDoc = await RoleModel.findOne({ code: user.role });
-    const permissions = roleDoc ? roleDoc.permissions : [];
+    const permissions = await getRolePermissions(user);
 
     const accessToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     setAuthCookie(res, accessToken);
@@ -149,6 +159,7 @@ export const switchUser = async (req: Request, res: Response) => {
           email: user.email,
           short: user.short,
           role: user.role,
+          roleRef: user.roleRef,
           fn: user.fn,
           team: user.team,
           color: user.color,
