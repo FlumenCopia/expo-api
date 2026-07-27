@@ -6,46 +6,72 @@ import { MenuModel } from '../models/Menu.model';
 import { PageModel } from '../models/Page.model';
 import { UserRole } from '../types';
 
-const SYSTEM_PERMISSIONS = [
-  { name: 'Full System Wildcard', code: '*', module: 'Admin', action: 'all', description: 'Unrestricted system access' },
-  { name: 'View All Tasks & Reports', code: 'view_all', module: 'Tasks', action: 'read', description: 'View all tasks and system views' },
-  { name: 'Create Tasks', code: 'create_task', module: 'Tasks', action: 'create', description: 'Create new tasks' },
-  { name: 'Edit Tasks', code: 'edit_task', module: 'Tasks', action: 'update', description: 'Edit existing tasks' },
-  { name: 'Assign Tasks', code: 'assign', module: 'Tasks', action: 'assign', description: 'Assign tasks to team members' },
-  { name: 'Approve Tasks', code: 'approve', module: 'Tasks', action: 'approve', description: 'Approve and publish tasks' },
-  { name: 'Submit for Review', code: 'submit_review', module: 'Tasks', action: 'review', description: 'Submit tasks for lead review' },
-  { name: 'Flag Issue', code: 'flag', module: 'Tasks', action: 'flag', description: 'Flag issues and blockers' },
-  { name: 'View Budget & Spend', code: 'view_budget', module: 'Budget', action: 'read', description: 'Access ad spend and financial data' },
-  { name: 'View KPI Analytics', code: 'view_kpi', module: 'KPI', action: 'read', description: 'Access KPI trackers and metrics' },
-  { name: 'Manage Team & Roles', code: 'manage_team', module: 'Team', action: 'manage', description: 'Add, edit, and delete team members and roles' },
-  { name: 'Manage Dynamic Pages', code: 'pages.manage', module: 'Admin', action: 'manage', description: 'Manage dynamic pages and website route sync' },
+const PAGE_WISE_PERMISSIONS = [
+  // Wildcard
+  { name: 'Full System Wildcard (*)', code: '*', module: 'System Admin', action: 'all', description: 'Unrestricted access across all pages' },
 
-  // Page View & Access Control Permissions
-  { name: 'View Command Center Page', code: 'page.dashboard.view', module: 'Pages', action: 'view', description: 'Access Command Center Dashboard' },
-  { name: 'View Task Board Page', code: 'page.tasks.view', module: 'Pages', action: 'view', description: 'Access Kanban Task Board' },
-  { name: 'View Timeline & Phases Page', code: 'page.timeline.view', module: 'Pages', action: 'view', description: 'Access Timeline & Phase Milestones' },
-  { name: 'View Contract Scope Page', code: 'page.deliverables.view', module: 'Pages', action: 'view', description: 'Access Deliverables Contract Scope' },
-  { name: 'View Approvals Queue Page', code: 'page.approvals.view', module: 'Pages', action: 'view', description: 'Access Approvals Queue' },
-  { name: 'View Team Capacity Page', code: 'page.team.view', module: 'Pages', action: 'view', description: 'Access Team Capacity & Workload' },
-  { name: 'View KPI Tracker Page', code: 'page.kpi.view', module: 'Pages', action: 'view', description: 'Access KPI Tracker' },
-  { name: 'View Ad Spend & Budget Page', code: 'page.budget.view', module: 'Pages', action: 'view', description: 'Access Ad Spend & Budget' },
-  { name: 'View Notifications Page', code: 'page.notifications.view', module: 'Pages', action: 'view', description: 'Access Activity Alerts & Notifications' },
-  { name: 'View Settings & Access Page', code: 'page.settings.view', module: 'Pages', action: 'view', description: 'Access System RBAC & Settings' },
-  { name: 'View Page Management Page', code: 'page.admin.view', module: 'Pages', action: 'view', description: 'Access Dynamic Route Sync & Management' }
+  // Command Center Page (/dashboard)
+  { name: 'View Command Center Page', code: 'page.dashboard.view', module: 'Command Center (/dashboard)', action: 'view', description: 'View Command Center Dashboard' },
+  { name: 'Edit Command Center Page', code: 'page.dashboard.edit', module: 'Command Center (/dashboard)', action: 'edit', description: 'Modify dashboard layout and widgets' },
+
+  // Task Board Page (/tasks)
+  { name: 'View Task Board Page', code: 'page.tasks.view', module: 'Task Board (/tasks)', action: 'view', description: 'View Kanban Task Board' },
+  { name: 'Edit / Move Tasks', code: 'page.tasks.edit', module: 'Task Board (/tasks)', action: 'edit', description: 'Create, update, drag & drop tasks' },
+  { name: 'Delete Tasks', code: 'page.tasks.delete', module: 'Task Board (/tasks)', action: 'delete', description: 'Delete tasks from board' },
+
+  // Timeline Page (/timeline)
+  { name: 'View Timeline & Phases Page', code: 'page.timeline.view', module: 'Timeline & Phases (/timeline)', action: 'view', description: 'View Phase milestones' },
+  { name: 'Edit Phase Milestones', code: 'page.timeline.edit', module: 'Timeline & Phases (/timeline)', action: 'edit', description: 'Update timeline dates & phase status' },
+
+  // Contract Scope Page (/deliverables)
+  { name: 'View Contract Scope Page', code: 'page.deliverables.view', module: 'Contract Scope (/deliverables)', action: 'view', description: 'View deliverables contract scope' },
+  { name: 'Edit Contract Scope', code: 'page.deliverables.edit', module: 'Contract Scope (/deliverables)', action: 'edit', description: 'Add and edit scope items' },
+  { name: 'Delete Scope Items', code: 'page.deliverables.delete', module: 'Contract Scope (/deliverables)', action: 'delete', description: 'Remove scope items' },
+
+  // Approvals Queue Page (/approvals)
+  { name: 'View Approvals Queue Page', code: 'page.approvals.view', module: 'Approvals Queue (/approvals)', action: 'view', description: 'View tasks waiting for approval' },
+  { name: 'Approve / Reject Tasks', code: 'page.approvals.edit', module: 'Approvals Queue (/approvals)', action: 'edit', description: 'Perform lead approval or rejection' },
+
+  // Team Capacity Page (/team)
+  { name: 'View Team Capacity Page', code: 'page.team.view', module: 'Team Capacity (/team)', action: 'view', description: 'View team members and workload' },
+  { name: 'Edit Team Members', code: 'page.team.edit', module: 'Team Capacity (/team)', action: 'edit', description: 'Add & edit team member details' },
+  { name: 'Delete Team Members', code: 'page.team.delete', module: 'Team Capacity (/team)', action: 'delete', description: 'Remove team members' },
+
+  // KPI Tracker Page (/kpi)
+  { name: 'View KPI Tracker Page', code: 'page.kpi.view', module: 'KPI Tracker (/kpi)', action: 'view', description: 'View KPI targets and metrics' },
+  { name: 'Edit KPI Metrics', code: 'page.kpi.edit', module: 'KPI Tracker (/kpi)', action: 'edit', description: 'Update actual vs target KPI metrics' },
+
+  // Ad Spend & Budget Page (/budget)
+  { name: 'View Ad Spend & Budget Page', code: 'page.budget.view', module: 'Ad Spend & Budget (/budget)', action: 'view', description: 'View ad spend & budget burn' },
+  { name: 'Edit Budget Allocations', code: 'page.budget.edit', module: 'Ad Spend & Budget (/budget)', action: 'edit', description: 'Update phase ad budgets' },
+  { name: 'Delete Budget Entries', code: 'page.budget.delete', module: 'Ad Spend & Budget (/budget)', action: 'delete', description: 'Remove budget items' },
+
+  // Notifications Page (/notifications)
+  { name: 'View Notifications Page', code: 'page.notifications.view', module: 'Notifications (/notifications)', action: 'view', description: 'Access activity alerts & notifications' },
+
+  // Settings & Access Page (/settings)
+  { name: 'View Settings & Access Page', code: 'page.settings.view', module: 'Settings & Access (/settings)', action: 'view', description: 'View system roles & RBAC matrix' },
+  { name: 'Edit Roles & Permissions', code: 'page.settings.edit', module: 'Settings & Access (/settings)', action: 'edit', description: 'Create and update dynamic roles' },
+  { name: 'Delete Custom Roles', code: 'page.settings.delete', module: 'Settings & Access (/settings)', action: 'delete', description: 'Delete dynamic custom roles' },
+
+  // Page Management Page (/admin/pages)
+  { name: 'View Page Management Page', code: 'page.admin.view', module: 'Page Management (/admin/pages)', action: 'view', description: 'View dynamic page routes' },
+  { name: 'Edit Page Routes', code: 'page.admin.edit', module: 'Page Management (/admin/pages)', action: 'edit', description: 'Create & sync dynamic route items' },
+  { name: 'Delete Page Routes', code: 'page.admin.delete', module: 'Page Management (/admin/pages)', action: 'delete', description: 'Remove page routes' },
 ];
 
 const DEFAULT_MENUS = [
-  { title: 'Command Center', route: '/dashboard', icon: '☀️', section: 'CAMPAIGN', displayOrder: 1, requiredPermission: 'view_all' },
-  { title: 'Task Board', route: '/tasks', icon: '📋', section: 'EXECUTION', displayOrder: 2, requiredPermission: 'view_all' },
-  { title: 'Timeline & Phases', route: '/timeline', icon: '⏱️', section: 'EXECUTION', displayOrder: 3, requiredPermission: 'view_all' },
-  { title: 'Contract Scope', route: '/deliverables', icon: '📦', section: 'EXECUTION', displayOrder: 4, requiredPermission: 'view_all' },
-  { title: 'Approvals Queue', route: '/approvals', icon: '✅', section: 'EXECUTION', displayOrder: 5, requiredPermission: 'approve' },
-  { title: 'Team Capacity', route: '/team', icon: '👥', section: 'MANAGEMENT', displayOrder: 6, requiredPermission: 'view_all' },
-  { title: 'KPI Tracker', route: '/kpi', icon: '🎯', section: 'MANAGEMENT', displayOrder: 7, requiredPermission: 'view_kpi' },
-  { title: 'Ad Spend & Budget', route: '/budget', icon: '💰', section: 'MANAGEMENT', displayOrder: 8, requiredPermission: 'view_budget' },
-  { title: 'Notifications', route: '/notifications', icon: '🔔', section: 'SYSTEM', displayOrder: 9 },
-  { title: 'Settings & Access', route: '/settings', icon: '⚙️', section: 'SYSTEM', displayOrder: 10, requiredPermission: 'manage_team' },
-  { title: 'Page Management', route: '/admin/pages', icon: '📄', section: 'SYSTEM', displayOrder: 11, requiredPermission: 'pages.manage' },
+  { title: 'Command Center', route: '/dashboard', icon: '☀️', section: 'CAMPAIGN', displayOrder: 1, requiredPermission: 'page.dashboard.view' },
+  { title: 'Task Board', route: '/tasks', icon: '📋', section: 'EXECUTION', displayOrder: 2, requiredPermission: 'page.tasks.view' },
+  { title: 'Timeline & Phases', route: '/timeline', icon: '⏱️', section: 'EXECUTION', displayOrder: 3, requiredPermission: 'page.timeline.view' },
+  { title: 'Contract Scope', route: '/deliverables', icon: '📦', section: 'EXECUTION', displayOrder: 4, requiredPermission: 'page.deliverables.view' },
+  { title: 'Approvals Queue', route: '/approvals', icon: '✅', section: 'EXECUTION', displayOrder: 5, requiredPermission: 'page.approvals.view' },
+  { title: 'Team Capacity', route: '/team', icon: '👥', section: 'MANAGEMENT', displayOrder: 6, requiredPermission: 'page.team.view' },
+  { title: 'KPI Tracker', route: '/kpi', icon: '🎯', section: 'MANAGEMENT', displayOrder: 7, requiredPermission: 'page.kpi.view' },
+  { title: 'Ad Spend & Budget', route: '/budget', icon: '💰', section: 'MANAGEMENT', displayOrder: 8, requiredPermission: 'page.budget.view' },
+  { title: 'Notifications', route: '/notifications', icon: '🔔', section: 'SYSTEM', displayOrder: 9, requiredPermission: 'page.notifications.view' },
+  { title: 'Settings & Access', route: '/settings', icon: '⚙️', section: 'SYSTEM', displayOrder: 10, requiredPermission: 'page.settings.view' },
+  { title: 'Page Management', route: '/admin/pages', icon: '📄', section: 'SYSTEM', displayOrder: 11, requiredPermission: 'page.admin.view' },
 ];
 
 const DEFAULT_PAGES = [
@@ -64,19 +90,19 @@ const DEFAULT_PAGES = [
 
 /**
  * Production Startup Initializer
- * Ensures System Permissions, Super Admin, default Menus, and Pages exist in MongoDB on server startup.
+ * Ensures Page-Wise Permissions, Super Admin, default Menus, and Pages exist in MongoDB on server startup.
  */
 export async function ensureSuperAdmin() {
   try {
-    // 1. Upsert all System & Page Permissions
-    for (const perm of SYSTEM_PERMISSIONS) {
+    // 1. Upsert Page-Wise Permissions
+    for (const perm of PAGE_WISE_PERMISSIONS) {
       await PermissionModel.updateOne(
         { code: perm.code },
-        { $setOnInsert: perm },
+        { $set: perm },
         { upsert: true }
       );
     }
-    console.log('[Startup Init] System permissions verified.');
+    console.log('[Startup Init] Page-Wise permissions verified & updated.');
 
     // 2. Ensure Super Admin Role exists
     let superAdminRole = await RoleModel.findOne({ code: 'super_admin' });
@@ -89,6 +115,8 @@ export async function ensureSuperAdmin() {
         isSystemRole: true,
       });
       console.log('[Startup Init] Created default Super Admin Role.');
+    } else {
+      await RoleModel.updateOne({ code: 'super_admin' }, { $set: { permissions: ['*'] } });
     }
 
     const defaultPasswordHash = await bcrypt.hash('Admin@123456', 10);
@@ -136,12 +164,15 @@ export async function ensureSuperAdmin() {
       console.log('[Startup Init] Super Admin users created.');
     }
 
-    // 4. Ensure Default Menus exist
-    const menuCount = await MenuModel.countDocuments();
-    if (menuCount === 0) {
-      await MenuModel.insertMany(DEFAULT_MENUS);
-      console.log('[Startup Init] Initialized default navigation menus.');
+    // 4. Upsert Default Menus with Page View Permissions
+    for (const menu of DEFAULT_MENUS) {
+      await MenuModel.updateOne(
+        { route: menu.route },
+        { $set: menu },
+        { upsert: true }
+      );
     }
+    console.log('[Startup Init] Initialized Page-Wise navigation menus.');
 
     // 5. Ensure Default Pages exist
     const pageCount = await PageModel.countDocuments();

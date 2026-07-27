@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IUser, UserRole } from '../types';
+import { IUser } from '../types';
 import { applyBaseFields } from './baseSchema';
 
 const UserSchema = new Schema<IUser>({
@@ -7,7 +7,7 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true, index: true },
   password: { type: String, select: false },
   short: { type: String, required: true },
-  role: { type: String, enum: Object.values(UserRole), required: true, index: true },
+  role: { type: String, required: true, index: true },
   roleRef: { type: Schema.Types.ObjectId, ref: 'Role' },
   fn: { type: String, required: true },
   team: { type: String, default: 'core', index: true },
