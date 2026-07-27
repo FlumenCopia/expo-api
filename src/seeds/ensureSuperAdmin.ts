@@ -8,56 +8,73 @@ import { UserRole } from '../types';
 
 const PAGE_WISE_PERMISSIONS = [
   // Wildcard
-  { name: 'Full System Wildcard (*)', code: '*', module: 'System Admin', action: 'all', description: 'Unrestricted access across all pages' },
+  { name: 'Full System Wildcard (*)', code: '*', module: 'System Admin', page: 'all', action: 'all', description: 'Unrestricted access across all pages' },
 
   // Command Center Page (/dashboard)
-  { name: 'View Command Center Page', code: 'page.dashboard.view', module: 'Command Center (/dashboard)', action: 'view', description: 'View Command Center Dashboard' },
-  { name: 'Edit Command Center Page', code: 'page.dashboard.edit', module: 'Command Center (/dashboard)', action: 'edit', description: 'Modify dashboard layout and widgets' },
+  { name: 'View Command Center', code: 'page.dashboard.view', module: 'Command Center', page: 'Command Center', action: 'view', description: 'View Command Center Dashboard' },
+  { name: 'Create Command Center Items', code: 'page.dashboard.create', module: 'Command Center', page: 'Command Center', action: 'create', description: 'Create dashboard widgets/alerts' },
+  { name: 'Edit Command Center', code: 'page.dashboard.edit', module: 'Command Center', page: 'Command Center', action: 'edit', description: 'Modify dashboard layout and widgets' },
+  { name: 'Delete Command Center Items', code: 'page.dashboard.delete', module: 'Command Center', page: 'Command Center', action: 'delete', description: 'Remove dashboard items' },
 
   // Task Board Page (/tasks)
-  { name: 'View Task Board Page', code: 'page.tasks.view', module: 'Task Board (/tasks)', action: 'view', description: 'View Kanban Task Board' },
-  { name: 'Edit / Move Tasks', code: 'page.tasks.edit', module: 'Task Board (/tasks)', action: 'edit', description: 'Create, update, drag & drop tasks' },
-  { name: 'Delete Tasks', code: 'page.tasks.delete', module: 'Task Board (/tasks)', action: 'delete', description: 'Delete tasks from board' },
+  { name: 'View Task Board', code: 'page.tasks.view', module: 'Task Board', page: 'Task Board', action: 'view', description: 'View Kanban Task Board' },
+  { name: 'Create Tasks', code: 'page.tasks.create', module: 'Task Board', page: 'Task Board', action: 'create', description: 'Create new tasks' },
+  { name: 'Edit / Move Tasks', code: 'page.tasks.edit', module: 'Task Board', page: 'Task Board', action: 'edit', description: 'Update, assign, drag & drop tasks' },
+  { name: 'Delete Tasks', code: 'page.tasks.delete', module: 'Task Board', page: 'Task Board', action: 'delete', description: 'Delete tasks from board' },
 
   // Timeline Page (/timeline)
-  { name: 'View Timeline & Phases Page', code: 'page.timeline.view', module: 'Timeline & Phases (/timeline)', action: 'view', description: 'View Phase milestones' },
-  { name: 'Edit Phase Milestones', code: 'page.timeline.edit', module: 'Timeline & Phases (/timeline)', action: 'edit', description: 'Update timeline dates & phase status' },
+  { name: 'View Timeline & Phases', code: 'page.timeline.view', module: 'Timeline & Phases', page: 'Timeline & Phases', action: 'view', description: 'View Phase milestones' },
+  { name: 'Create Phase Milestones', code: 'page.timeline.create', module: 'Timeline & Phases', page: 'Timeline & Phases', action: 'create', description: 'Add new timeline phase' },
+  { name: 'Edit Phase Milestones', code: 'page.timeline.edit', module: 'Timeline & Phases', page: 'Timeline & Phases', action: 'edit', description: 'Update timeline dates & phase status' },
+  { name: 'Delete Phase Milestones', code: 'page.timeline.delete', module: 'Timeline & Phases', page: 'Timeline & Phases', action: 'delete', description: 'Remove phase milestone' },
 
   // Contract Scope Page (/deliverables)
-  { name: 'View Contract Scope Page', code: 'page.deliverables.view', module: 'Contract Scope (/deliverables)', action: 'view', description: 'View deliverables contract scope' },
-  { name: 'Edit Contract Scope', code: 'page.deliverables.edit', module: 'Contract Scope (/deliverables)', action: 'edit', description: 'Add and edit scope items' },
-  { name: 'Delete Scope Items', code: 'page.deliverables.delete', module: 'Contract Scope (/deliverables)', action: 'delete', description: 'Remove scope items' },
+  { name: 'View Contract Scope', code: 'page.deliverables.view', module: 'Contract Scope', page: 'Contract Scope', action: 'view', description: 'View deliverables contract scope' },
+  { name: 'Create Scope Items', code: 'page.deliverables.create', module: 'Contract Scope', page: 'Contract Scope', action: 'create', description: 'Add new scope item' },
+  { name: 'Edit Contract Scope', code: 'page.deliverables.edit', module: 'Contract Scope', page: 'Contract Scope', action: 'edit', description: 'Edit existing scope items' },
+  { name: 'Delete Scope Items', code: 'page.deliverables.delete', module: 'Contract Scope', page: 'Contract Scope', action: 'delete', description: 'Remove scope items' },
 
   // Approvals Queue Page (/approvals)
-  { name: 'View Approvals Queue Page', code: 'page.approvals.view', module: 'Approvals Queue (/approvals)', action: 'view', description: 'View tasks waiting for approval' },
-  { name: 'Approve / Reject Tasks', code: 'page.approvals.edit', module: 'Approvals Queue (/approvals)', action: 'edit', description: 'Perform lead approval or rejection' },
+  { name: 'View Approvals Queue', code: 'page.approvals.view', module: 'Approvals Queue', page: 'Approvals Queue', action: 'view', description: 'View tasks waiting for approval' },
+  { name: 'Create Approval Request', code: 'page.approvals.create', module: 'Approvals Queue', page: 'Approvals Queue', action: 'create', description: 'Submit new approval request' },
+  { name: 'Approve / Reject Tasks', code: 'page.approvals.edit', module: 'Approvals Queue', page: 'Approvals Queue', action: 'edit', description: 'Perform lead approval or rejection' },
+  { name: 'Delete Approval Items', code: 'page.approvals.delete', module: 'Approvals Queue', page: 'Approvals Queue', action: 'delete', description: 'Dismiss approval request' },
 
   // Team Capacity Page (/team)
-  { name: 'View Team Capacity Page', code: 'page.team.view', module: 'Team Capacity (/team)', action: 'view', description: 'View team members and workload' },
-  { name: 'Edit Team Members', code: 'page.team.edit', module: 'Team Capacity (/team)', action: 'edit', description: 'Add & edit team member details' },
-  { name: 'Delete Team Members', code: 'page.team.delete', module: 'Team Capacity (/team)', action: 'delete', description: 'Remove team members' },
+  { name: 'View Team Capacity', code: 'page.team.view', module: 'Team Capacity', page: 'Team Capacity', action: 'view', description: 'View team members and workload' },
+  { name: 'Create Team Members', code: 'page.team.create', module: 'Team Capacity', page: 'Team Capacity', action: 'create', description: 'Add new team member account' },
+  { name: 'Edit Team Members', code: 'page.team.edit', module: 'Team Capacity', page: 'Team Capacity', action: 'edit', description: 'Edit team member details' },
+  { name: 'Delete Team Members', code: 'page.team.delete', module: 'Team Capacity', page: 'Team Capacity', action: 'delete', description: 'Remove team member' },
 
   // KPI Tracker Page (/kpi)
-  { name: 'View KPI Tracker Page', code: 'page.kpi.view', module: 'KPI Tracker (/kpi)', action: 'view', description: 'View KPI targets and metrics' },
-  { name: 'Edit KPI Metrics', code: 'page.kpi.edit', module: 'KPI Tracker (/kpi)', action: 'edit', description: 'Update actual vs target KPI metrics' },
+  { name: 'View KPI Tracker', code: 'page.kpi.view', module: 'KPI Tracker', page: 'KPI Tracker', action: 'view', description: 'View KPI targets and metrics' },
+  { name: 'Create KPI Metric', code: 'page.kpi.create', module: 'KPI Tracker', page: 'KPI Tracker', action: 'create', description: 'Add new KPI tracker metric' },
+  { name: 'Edit KPI Metrics', code: 'page.kpi.edit', module: 'KPI Tracker', page: 'KPI Tracker', action: 'edit', description: 'Update actual vs target KPI metrics' },
+  { name: 'Delete KPI Metric', code: 'page.kpi.delete', module: 'KPI Tracker', page: 'KPI Tracker', action: 'delete', description: 'Remove KPI metric' },
 
   // Ad Spend & Budget Page (/budget)
-  { name: 'View Ad Spend & Budget Page', code: 'page.budget.view', module: 'Ad Spend & Budget (/budget)', action: 'view', description: 'View ad spend & budget burn' },
-  { name: 'Edit Budget Allocations', code: 'page.budget.edit', module: 'Ad Spend & Budget (/budget)', action: 'edit', description: 'Update phase ad budgets' },
-  { name: 'Delete Budget Entries', code: 'page.budget.delete', module: 'Ad Spend & Budget (/budget)', action: 'delete', description: 'Remove budget items' },
+  { name: 'View Ad Spend & Budget', code: 'page.budget.view', module: 'Ad Spend & Budget', page: 'Ad Spend & Budget', action: 'view', description: 'View ad spend & budget burn' },
+  { name: 'Create Budget Allocation', code: 'page.budget.create', module: 'Ad Spend & Budget', page: 'Ad Spend & Budget', action: 'create', description: 'Add platform ad budget' },
+  { name: 'Edit Budget Allocations', code: 'page.budget.edit', module: 'Ad Spend & Budget', page: 'Ad Spend & Budget', action: 'edit', description: 'Update phase ad budgets' },
+  { name: 'Delete Budget Entries', code: 'page.budget.delete', module: 'Ad Spend & Budget', page: 'Ad Spend & Budget', action: 'delete', description: 'Remove budget items' },
 
   // Notifications Page (/notifications)
-  { name: 'View Notifications Page', code: 'page.notifications.view', module: 'Notifications (/notifications)', action: 'view', description: 'Access activity alerts & notifications' },
+  { name: 'View Notifications', code: 'page.notifications.view', module: 'Notifications', page: 'Notifications', action: 'view', description: 'Access activity alerts' },
+  { name: 'Create Notification', code: 'page.notifications.create', module: 'Notifications', page: 'Notifications', action: 'create', description: 'Send system notification' },
+  { name: 'Edit Notification', code: 'page.notifications.edit', module: 'Notifications', page: 'Notifications', action: 'edit', description: 'Mark or edit alert status' },
+  { name: 'Delete Notifications', code: 'page.notifications.delete', module: 'Notifications', page: 'Notifications', action: 'delete', description: 'Clear activity alerts' },
 
   // Settings & Access Page (/settings)
-  { name: 'View Settings & Access Page', code: 'page.settings.view', module: 'Settings & Access (/settings)', action: 'view', description: 'View system roles & RBAC matrix' },
-  { name: 'Edit Roles & Permissions', code: 'page.settings.edit', module: 'Settings & Access (/settings)', action: 'edit', description: 'Create and update dynamic roles' },
-  { name: 'Delete Custom Roles', code: 'page.settings.delete', module: 'Settings & Access (/settings)', action: 'delete', description: 'Delete dynamic custom roles' },
+  { name: 'View Settings & Access', code: 'page.settings.view', module: 'Settings & Access', page: 'Settings & Access', action: 'view', description: 'View system roles & RBAC matrix' },
+  { name: 'Create Dynamic Roles', code: 'page.settings.create', module: 'Settings & Access', page: 'Settings & Access', action: 'create', description: 'Create new dynamic custom role' },
+  { name: 'Edit Roles & Permissions', code: 'page.settings.edit', module: 'Settings & Access', page: 'Settings & Access', action: 'edit', description: 'Update role permissions' },
+  { name: 'Delete Custom Roles', code: 'page.settings.delete', module: 'Settings & Access', page: 'Settings & Access', action: 'delete', description: 'Delete dynamic custom roles' },
 
   // Page Management Page (/admin/pages)
-  { name: 'View Page Management Page', code: 'page.admin.view', module: 'Page Management (/admin/pages)', action: 'view', description: 'View dynamic page routes' },
-  { name: 'Edit Page Routes', code: 'page.admin.edit', module: 'Page Management (/admin/pages)', action: 'edit', description: 'Create & sync dynamic route items' },
-  { name: 'Delete Page Routes', code: 'page.admin.delete', module: 'Page Management (/admin/pages)', action: 'delete', description: 'Remove page routes' },
+  { name: 'View Page Management', code: 'page.admin.view', module: 'Page Management', page: 'Page Management', action: 'view', description: 'View dynamic page routes' },
+  { name: 'Create Page Routes', code: 'page.admin.create', module: 'Page Management', page: 'Page Management', action: 'create', description: 'Add new dynamic route' },
+  { name: 'Edit Page Routes', code: 'page.admin.edit', module: 'Page Management', page: 'Page Management', action: 'edit', description: 'Update route settings' },
+  { name: 'Delete Page Routes', code: 'page.admin.delete', module: 'Page Management', page: 'Page Management', action: 'delete', description: 'Remove page routes' },
 ];
 
 const DEFAULT_MENUS = [
@@ -90,11 +107,11 @@ const DEFAULT_PAGES = [
 
 /**
  * Production Startup Initializer
- * Ensures Page-Wise Permissions, Super Admin, default Menus, and Pages exist in MongoDB on server startup.
+ * Ensures Page-Wise Permissions (4 Standard CRUD Actions per Page), Super Admin, default Menus, and Pages exist in MongoDB on server startup.
  */
 export async function ensureSuperAdmin() {
   try {
-    // 1. Upsert Page-Wise Permissions
+    // 1. Upsert Page-Wise Permissions (View, Create, Edit, Delete per Page)
     for (const perm of PAGE_WISE_PERMISSIONS) {
       await PermissionModel.updateOne(
         { code: perm.code },
@@ -102,7 +119,7 @@ export async function ensureSuperAdmin() {
         { upsert: true }
       );
     }
-    console.log('[Startup Init] Page-Wise permissions verified & updated.');
+    console.log('[Startup Init] Page-Wise permissions Matrix verified & updated.');
 
     // 2. Ensure Super Admin Role exists
     let superAdminRole = await RoleModel.findOne({ code: 'super_admin' });
