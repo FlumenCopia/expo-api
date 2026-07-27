@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { Server as SocketIOServer } from 'socket.io';
 import app from './app';
 import { connectDB } from './config/db';
+import { ensureSuperAdmin } from './seeds/ensureSuperAdmin';
 
 dotenv.config();
 
@@ -32,7 +33,10 @@ io.on('connection', (socket) => {
 
 export { io };
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  // Production Safe Startup Check: Ensure Super Admin exists without wiping data
+  await ensureSuperAdmin();
+
   server.listen(PORT, () => {
     console.log(`[Server] Campaign Command Center Backend running on port ${PORT}`);
   });
