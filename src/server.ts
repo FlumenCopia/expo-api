@@ -4,7 +4,6 @@ import { Server as SocketIOServer } from 'socket.io';
 import app from './app';
 import { connectDB } from './config/db';
 import { ensureSuperAdmin } from './seeds/ensureSuperAdmin';
-import { autoSeed } from './seeds/autoSeed';
 
 dotenv.config();
 
@@ -37,8 +36,6 @@ export { io };
 connectDB().then(async () => {
   // Production Safe Startup Check: Ensure Super Admin & Page permissions exist
   await ensureSuperAdmin();
-  // Auto-seed initial datasets (tasks, deliverables, KPIs, budgets, team) IF database is uninitialized (first-time only)
-  await autoSeed();
 
   server.listen(PORT, () => {
     console.log(`[Server] Campaign Command Center Backend running on port ${PORT}`);
