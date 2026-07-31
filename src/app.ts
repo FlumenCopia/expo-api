@@ -50,13 +50,31 @@ app.use('/api/kpis', kpiRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+import mongoose from 'mongoose';
+
 // Healthcheck
 app.get('/api/health', (req: Request, res: Response) => {
+  const dbState = mongoose.connection.readyState;
+  // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
+  const isConnected = dbState === 1;
+
+  if (!isConnected) {
+    return res.status(503).json({
+      success: false,
+      dbConnected: false,
+      dbState,
+      message: 'Database connection is not ready. Service unavailable.',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   res.json({
-    status: 'ok',
+    success: true,
+    dbConnected: true,
+    dbState,
     system: 'Masters Expo 2026 Campaign Command Center API',
     env: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
