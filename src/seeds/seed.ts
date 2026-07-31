@@ -204,15 +204,15 @@ async function seed() {
   const superAdminRole = roleDocs.find(r => r.code === 'super_admin');
 
   // Seed Default Admin & Users
-  console.log('[Seed] Seeding Team Members...');
-  const defaultPasswordHash = await bcrypt.hash('Admin@123456', 10);
+  console.log('[Seed] Seeding Team Members (password = email)...');
   
   for (const m of SEED_MEMBERS) {
     const roleDoc = roleDocs.find(r => r.code === m.role) || superAdminRole;
+    const memberPasswordHash = await bcrypt.hash(m.email, 10);
     await UserModel.create({
       ...m,
       email: m.email,
-      password: defaultPasswordHash,
+      password: memberPasswordHash,
       roleRef: roleDoc?._id,
     });
   }

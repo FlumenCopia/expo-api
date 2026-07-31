@@ -136,7 +136,8 @@ export async function ensureSuperAdmin() {
       await RoleModel.updateOne({ code: 'super_admin' }, { $set: { permissions: ['*'] } });
     }
 
-    const defaultPasswordHash = await bcrypt.hash('Admin@123456', 10);
+    const adminPasswordHash = await bcrypt.hash('admin@flumenx.com', 10);
+    const anoopPasswordHash = await bcrypt.hash('anoop@flumenx.com', 10);
 
     // 3. Ensure Super Admin users exist
     const existingSuperAdmin = await UserModel.findOne({
@@ -151,7 +152,7 @@ export async function ensureSuperAdmin() {
     if (!existingSuperAdmin) {
       await UserModel.create({
         email: 'admin@flumenx.com',
-        password: defaultPasswordHash,
+        password: adminPasswordHash,
         name: 'FlumenX Super Admin',
         short: 'SA',
         role: UserRole.SUPER_ADMIN,
@@ -166,7 +167,7 @@ export async function ensureSuperAdmin() {
 
       await UserModel.create({
         email: 'anoop@flumenx.com',
-        password: defaultPasswordHash,
+        password: anoopPasswordHash,
         name: 'Anoop Krishna',
         short: 'AK',
         role: UserRole.SUPER_ADMIN,
