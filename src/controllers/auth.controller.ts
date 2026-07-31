@@ -33,19 +33,20 @@ const getRolePermissions = async (user: any) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cleanPassword = (password || '').trim();
 
-    if (!email) {
+    if (!cleanEmail) {
       return res.status(400).json({ success: false, message: 'Email is required' });
     }
 
-    const user = await UserModel.findOne({ email }).select('+password');
-    if (!user || user.isDeleted || !user.isActive) {
+    const user = await UserModel.findOne({ email: cleanEmail }).select('+password');
+    if (!user || user.isDeleted || user.isActive === false) {
       return res.status(401).json({ success: false, message: 'Invalid credentials or user inactive' });
     }
 
-    if (password) {
-      const isMatch = await bcrypt.compare(password, user.password || '');
+    if (cleanPassword) {
+      const isMatch = await bcrypt.compare(cleanPassword, user.password || '');
       if (!isMatch) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }

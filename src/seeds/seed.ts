@@ -41,6 +41,7 @@ const SEED_ROLES = [
 ];
 
 const SEED_MEMBERS = [
+  { email: 'admin@flumenx.com', name: 'FlumenX Super Admin', short: 'SA', role: 'super_admin', fn: 'System Administrator', team: 'core', color: '#F5A623', cap: 40, skills: ['admin', 'security', 'full_access'] },
   { email: 'anoop@flumenx.com', name: 'Anoop Krishna', short: 'AK', role: 'super_admin', fn: 'Founder / Strategy', team: 'core', color: '#F5A623', cap: 12, skills: ['strategy', 'client', 'approval'] },
   { email: 'anurag@flumenx.com', name: 'Anurag', short: 'AN', role: 'ops_head', fn: 'Operations Head · PCP', team: 'core', color: '#3B82F6', cap: 30, skills: ['ops', 'client', 'coordination'] },
   { email: 'dishun@flumenx.com', name: 'Dishun', short: 'DH', role: 'team_lead', fn: 'Team Lead · Ads & Planning', team: 'alpha', color: '#22D3EE', cap: 26, skills: ['ads', 'planning', 'strategy'] },
@@ -208,12 +209,15 @@ async function seed() {
   
   for (const m of SEED_MEMBERS) {
     const roleDoc = roleDocs.find(r => r.code === m.role) || superAdminRole;
-    const memberPasswordHash = await bcrypt.hash(m.email, 10);
+    const cleanEmail = m.email.toLowerCase().trim();
+    const memberPasswordHash = await bcrypt.hash(cleanEmail, 10);
     await UserModel.create({
       ...m,
-      email: m.email,
+      email: cleanEmail,
       password: memberPasswordHash,
       roleRef: roleDoc?._id,
+      isActive: true,
+      isDeleted: false,
     });
   }
 
