@@ -33,8 +33,9 @@ const getRolePermissions = async (user: any) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const cleanEmail = (email || '').toLowerCase().trim();
-    const cleanPassword = (password || '').trim();
+    const { email, password } = req.body;
+    const cleanEmail = (email || '').toString().toLowerCase().trim();
+    const cleanPassword = (password || '').toString().trim();
 
     if (!cleanEmail) {
       return res.status(400).json({ success: false, message: 'Email is required' });
