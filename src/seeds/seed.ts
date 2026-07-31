@@ -33,11 +33,56 @@ const SEED_PERMISSIONS = [
 
 const SEED_ROLES = [
   { name: 'Super Admin', code: 'super_admin', description: 'Full system access', permissions: ['*'], isSystemRole: true },
-  { name: 'Operations Head', code: 'ops_head', description: 'Operations lead access', permissions: ['view_all', 'create_task', 'assign', 'approve', 'edit_task', 'view_budget', 'view_kpi', 'manage_team'], isSystemRole: false },
-  { name: 'Team Lead', code: 'team_lead', description: 'Lead member access', permissions: ['view_all', 'create_task', 'assign', 'edit_task', 'submit_review', 'view_kpi'], isSystemRole: false },
-  { name: 'Team Member', code: 'member', description: 'Standard member access', permissions: ['view_own', 'update_own', 'submit_review'], isSystemRole: false },
-  { name: 'Quality / HR', code: 'qc', description: 'Quality control access', permissions: ['view_all', 'approve', 'flag', 'view_kpi'], isSystemRole: false },
-  { name: 'Accounts', code: 'accounts', description: 'Accounts team access', permissions: ['view_budget', 'view_all'], isSystemRole: false }
+  { 
+    name: 'Operations Head', 
+    code: 'ops_head', 
+    description: 'Operations lead access', 
+    permissions: [
+      'view_all', 'create_task', 'assign', 'approve', 'edit_task', 'view_budget', 'view_kpi', 'manage_team',
+      'page.dashboard.view', 'page.tasks.view', 'page.timeline.view', 'page.deliverables.view', 'page.approvals.view', 'page.team.view', 'page.kpi.view', 'page.budget.view', 'page.notifications.view'
+    ], 
+    isSystemRole: false 
+  },
+  { 
+    name: 'Team Lead', 
+    code: 'team_lead', 
+    description: 'Lead member access', 
+    permissions: [
+      'view_all', 'create_task', 'assign', 'edit_task', 'submit_review', 'view_kpi',
+      'page.dashboard.view', 'page.tasks.view', 'page.timeline.view', 'page.deliverables.view', 'page.approvals.view', 'page.team.view', 'page.kpi.view', 'page.notifications.view'
+    ], 
+    isSystemRole: false 
+  },
+  { 
+    name: 'Team Member', 
+    code: 'member', 
+    description: 'Standard member access', 
+    permissions: [
+      'view_all', 'view_own', 'update_own', 'submit_review',
+      'page.dashboard.view', 'page.tasks.view', 'page.timeline.view', 'page.deliverables.view', 'page.notifications.view'
+    ], 
+    isSystemRole: false 
+  },
+  { 
+    name: 'Quality / HR', 
+    code: 'qc', 
+    description: 'Quality control access', 
+    permissions: [
+      'view_all', 'approve', 'flag', 'view_kpi',
+      'page.dashboard.view', 'page.tasks.view', 'page.timeline.view', 'page.deliverables.view', 'page.approvals.view', 'page.kpi.view', 'page.notifications.view'
+    ], 
+    isSystemRole: false 
+  },
+  { 
+    name: 'Accounts', 
+    code: 'accounts', 
+    description: 'Accounts team access', 
+    permissions: [
+      'view_budget', 'view_all',
+      'page.dashboard.view', 'page.budget.view', 'page.deliverables.view', 'page.notifications.view'
+    ], 
+    isSystemRole: false 
+  }
 ];
 
 const SEED_MEMBERS = [
