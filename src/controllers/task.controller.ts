@@ -66,6 +66,13 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
     // Check Super Admin privilege
     const isSuperAdmin = userPermissions.includes('*') || req.user?.role === 'super_admin';
 
+    // Check Granted Role Edit Permissions (from RBAC Matrix)
+    const hasEditPermission =
+      userPermissions.includes('page.tasks.edit') ||
+      userPermissions.includes('page.timeline.edit') ||
+      userPermissions.includes('page.approvals.edit') ||
+      userPermissions.includes('edit_task');
+
     // Check Assigned Person
     const isAssignee =
       existingTask.assignee === currentUserId ||
@@ -81,11 +88,11 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
     // Check Creator
     const isCreator = existingTask.createdBy === currentUserId;
 
-    // Strict Authorization: Only Super Admin, Assigned Person, Reviewer, or Creator can update task
-    if (!isSuperAdmin && !isAssignee && !isReviewer && !isCreator) {
+    // Authorization: Super Admin, Granted Role Edit Permission, Assignee, Reviewer, or Creator
+    if (!isSuperAdmin && !hasEditPermission && !isAssignee && !isReviewer && !isCreator) {
       return res.status(403).json({
         success: false,
-        message: 'Access Restricted. Only the assigned team member, reviewer, or Super Admin can update this task.',
+        message: 'Access Restricted. Only the assigned team member, reviewer, authorized role, or Super Admin can update this task.',
       });
     }
 
@@ -126,12 +133,16 @@ export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
     const currentUserId = req.user?.id || '';
     const userPermissions = req.user?.permissions || [];
     const isSuperAdmin = userPermissions.includes('*') || req.user?.role === 'super_admin';
+    const hasDeletePermission =
+      userPermissions.includes('page.tasks.delete') ||
+      userPermissions.includes('page.timeline.delete') ||
+      userPermissions.includes('delete_task');
     const isCreator = existingTask.createdBy === currentUserId;
 
-    if (!isSuperAdmin && !isCreator) {
+    if (!isSuperAdmin && !hasDeletePermission && !isCreator) {
       return res.status(403).json({
         success: false,
-        message: 'Access Restricted. Only the task creator or Super Admin can delete this task.',
+        message: 'Access Restricted. Only the task creator, authorized role, or Super Admin can delete this task.',
       });
     }
 

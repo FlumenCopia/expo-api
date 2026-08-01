@@ -116,6 +116,19 @@ export const changeUserPassword = async (req: AuthenticatedRequest, res: Respons
       return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
     }
 
+    const currentUserId = req.user?.id || '';
+    const userPermissions = req.user?.permissions || [];
+    const isSuperAdmin = userPermissions.includes('*') || req.user?.role === 'super_admin';
+    const isSelf = currentUserId === id;
+    const hasPermission = userPermissions.includes('page.team.edit') || userPermissions.includes('manage_team');
+
+    if (!isSelf && !isSuperAdmin && !hasPermission) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Restricted. You can only change your own password or require team management permission.',
+      });
+    }
+
     const passwordHash = await bcrypt.hash(newPassword, 10);
     const user = await UserModel.findByIdAndUpdate(id, { password: passwordHash, updatedBy: req.user?.id });
 

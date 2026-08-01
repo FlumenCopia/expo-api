@@ -57,7 +57,10 @@ export const authenticateJWT = async (
     if (!roleDoc && user.role) {
       roleDoc = await RoleModel.findOne({ code: user.role });
     }
-    const permissions = roleDoc ? roleDoc.permissions : [];
+    const permissions = roleDoc ? [...roleDoc.permissions] : [];
+    if (user.role === 'super_admin' && !permissions.includes('*')) {
+      permissions.push('*');
+    }
 
     req.user = {
       id: user._id.toString(),
