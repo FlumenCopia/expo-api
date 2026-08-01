@@ -7,7 +7,7 @@ import { AuditLogModel } from '../models/AuditLog.model';
 
 export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const tasks = await TaskModel.find().sort({ createdAt: -1 });
+    const tasks = await TaskModel.find().sort({ createdAt: -1 }).lean();
     return res.json({ success: true, data: tasks });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: error.message });
