@@ -11,7 +11,7 @@ const UserSchema = new Schema<IUser>({
   roleRef: { type: Schema.Types.ObjectId, ref: 'Role' },
   fn: { type: String, required: true },
   team: { type: String, default: 'core', index: true },
-  color: { type: String, default: '#F5A623' },
+  color: { type: String, default: '#10E784' },
   cap: { type: Number, default: 20 },
   skills: [{ type: String }],
   avatar: { type: String, default: '' },
