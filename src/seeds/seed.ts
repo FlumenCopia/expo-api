@@ -86,8 +86,8 @@ const SEED_ROLES = [
 ];
 
 const SEED_MEMBERS = [
-  { email: 'admin@flumenx.com', name: 'FlumenX Super Admin', short: 'SA', role: 'super_admin', fn: 'System Administrator', team: 'core', color: '#10E784', cap: 40, skills: ['admin', 'security', 'full_access'] },
-  { email: 'anoop@flumenx.com', name: 'Anoop Krishna', short: 'AK', role: 'super_admin', fn: 'Founder / Strategy', team: 'core', color: '#10E784', cap: 12, skills: ['strategy', 'client', 'approval'] },
+  { email: 'admin@flumenx.com', name: 'FlumenX Super Admin', short: 'SA', role: 'super_admin', fn: 'System Administrator', team: 'core', color: '#FFFFFF', cap: 40, skills: ['admin', 'security', 'full_access'] },
+  { email: 'anoop@flumenx.com', name: 'Anoop Krishna', short: 'AK', role: 'super_admin', fn: 'Founder / Strategy', team: 'core', color: '#FFFFFF', cap: 12, skills: ['strategy', 'client', 'approval'] },
   { email: 'anurag@flumenx.com', name: 'Anurag', short: 'AN', role: 'ops_head', fn: 'Operations Head · PCP', team: 'core', color: '#3B82F6', cap: 30, skills: ['ops', 'client', 'coordination'] },
   { email: 'dishun@flumenx.com', name: 'Dishun', short: 'DH', role: 'team_lead', fn: 'Team Lead · Ads & Planning', team: 'alpha', color: '#22D3EE', cap: 26, skills: ['ads', 'planning', 'strategy'] },
   { email: 'shibin@flumenx.com', name: 'Shibin', short: 'SH', role: 'team_lead', fn: 'Team Lead · Digital Marketing', team: 'beta', color: '#A78BFA', cap: 24, skills: ['ads', 'social', 'campaigns'] },
